@@ -1,0 +1,173 @@
+Initial architectural decisions v1.
+
+
+File system data storage: 
+    Songs and all metadata will be stored on the file system and synchronized with google drive(or othersyncing software: git/dropbox). todo: Working data should always be non conflicting!
+
+
+../data.edn { ; users info
+    :users [
+        [/id/ 'marco' 'pass']
+        [/id/ 'pryjmak' 'pass']
+        [/id/ 'ndrw' 'pass']   
+    ]
+
+    ; data extraction funcs from files
+    'handlers' {
+            ; which order? gen fn with predefined param - juxt or how
+            '%FILE_NAME%' [(fn[metadata file] (.getName() file)) 'optional description of what function does '] ; maybe metadata
+
+            '%FILE_DATE%'
+
+            '%FILE_CONTENTS'
+
+            '%META_ALREADY_CONTAINS%'
+
+            ;;; other parsing function like guess date 
+            ; '%GUESS_DATE% (fn[file metadata] ... return VALUE|NIL' ; nil never overrides 
+    }
+
+}
+
+../state.clj { ; data flushed to disk periodically, memoization of file handling routine
+    :tags ['om', 'sabath', ..]    
+    :bands [%SHORT_BAND_NAME% {
+                                :hashes {
+                                    %HASH1% {..file info...} 
+                                    %HASH2% {..file info...}}                  
+                            }
+            
+            %SHORT_BAND_NAME% {}
+            ]
+    }
+}
+
+;;; some kind of monitor will be checking if data had been changed on file-system
+
+
+; each band has its own folder which is short name of band
+%SHORT_BAND_NAME%/
+    songs/                  ; there can be several folders with files, including some metadata
+        %SONG_NAME%/
+            %*.mp3%
+        %SONG_NAME%/
+            %.%
+
+    rehearsals/
+        %DATE%/
+            %.% 
+
+
+    ; data mining config
+    meta-data.edn {
+        'permissions' [/id/ /id/ /id/ ] ; or maybe :all ;; permisions for users to access data
+
+        'parser_config' [  ; data for parser to extract
+            ; string    _'folder'_ — iterate files and folders in 'folder' 
+            ; hashmap   {:property_name %PROPERTY_HANDLER}
+            ; [ ['filename regex' { :some_property %SOME_FILE_HANDLER% } ] ] - vector means iterate through files with mask and extract properties
+
+
+            ['songs' {song_name: %SONG_NAME%} [['*.mp3:*.wma' {
+                                                        :hash %HASH%
+                                                        :song_name [%META_ALREADY_CONTAINS% ; do not overwrite :song_name if it is present
+                                                                    %FILE_NAME%]
+                                                        :date %FILE_DATE% ; override :date if there will be
+                                                         }]
+                                               ['*.txt' {:lyrics %FILE_CONTENT%
+                                                         :date %FILE_DATE%
+
+                                                         ;;;;;;;;;
+                                                         ; todo - start with actions
+                                                         ; :actions [%JS_FUNC% %BACKEND_FUNC(like EDIT)%
+                                                         }]
+                                               ['*.midi' ...] ; songsterr or other API? 
+                                               ['*.gtp' ...]  ;
+                                               
+                                                         ]  
+            
+            ['rehearsals' {date: %DATE%} [['']]  ]
+
+            ;;;;;;;;;
+            ;; or just [['*' {:song_name %FILE_CONTENT%
+            ;;                :date %FILE_DATE%}]]
+        ]
+    }
+
+; TODO: unique file hash
+
+        ; so resulting files be a vector
+
+            [{
+                ; madatory
+                :song_name "420=42"
+                :date 12/12/2013
+                ; optional
+                :lyrics 'Bla-bla-bla'
+                :hash %HASH%
+                :file '/aaa/bbb/1.mp3'
+             },
+             {
+                :song_name "420=42"
+                :date 13/12/2013
+                ; optional
+                :hash %HASH1%
+                :file '/aaa/bbb/2.mp3'
+             }]
+
+        ; that can be later transformed to 
+            {%%SONG_NAME%%: {
+                             :audios [%HASH% {...
+                                     %HASH% {...}}]}
+             
+                             :txt [%HASH% { ...}]
+             
+                             :midi ; ?
+                             :gtp  ; ?
+                            }
+             %%SONG_NAME%%: ....
+             }
+
+
+    data.edn {
+        :name 'Shiva The Destructor'
+
+        :comments {%%SONG_NAME%%: {
+                                   :comments [[%user-id% %date% %comment% %meta-data% ]] ; maybe id? how to answer comment? how to edit
+                                   
+                                    
+                                    :audios [%HASH% {:comments ...
+                                                                ; [/id/ 12-12-2013 'FFFFUUUUU!' {:position 1:03:03}]
+                                             %HASH% {:comments ...}}]}
+             
+                                    :txt [%HASH% {:comments ...
+                                                                ; [/id/ 12-12-2013 'FFFFUUUUU!' {:position 25:38 - 27:48}]
+                                                                }]
+                                }
+        
+        ; manually entered meta data
+        :meta {
+               {%%SONG_NAME%%:
+                    :
+                }
+            }
+    }
+
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;
+; server filesystem
+
+index - :interceptors [check-login check-band check-permission get-bands]
+
+band[short-name] - :interceptors [check-login check-band check-permission get-songs]
+
+song[song-name] -  :interceptors [check-login check-band check-permission check-song get-song]
+
+GET comment[song-name] 
+PUT comment[user, band, song-name, optional-hash, comment]
+
+
+
+
