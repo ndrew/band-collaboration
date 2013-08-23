@@ -34,6 +34,9 @@
    (doseq [ns-sym (track)]
      (require ns-sym :reload))
    (catch Throwable e (.printStackTrace e))))
+
+(defn reload-all[]
+  (clojure.tools.namespace.repl/refresh))
  
 (defn watch
   ([] (watch ["src"]))

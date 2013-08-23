@@ -5,15 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [io.pedestal/pedestal.service "0.2.0-SNAPSHOT"]
-
-                 ;; Remove this line and uncomment the next line to
-                 ;; use Tomcat instead of Jetty:
-                 
-                 ; in order to deploy to war jetty was commented
-                 ;
+                 ; in order to deploy to war jetty — comment the like below, or use make-war.sh
                  [io.pedestal/pedestal.jetty "0.2.0-SNAPSHOT"]
-                 ;; [io.pedestal/pedestal.tomcat "0.2.0-SNAPSHOT"]
-
                  ;; auto-reload changes
                  [ns-tracker "0.2.1"]
 
