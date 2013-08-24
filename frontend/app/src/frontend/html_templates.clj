@@ -3,4 +3,7 @@
 
 (defmacro frontend-templates
   []
-  {:frontend-page (dtfn (tnodes "frontend.html" "hello") #{:id})})
+  {:frontend-page (dtfn (tnodes "frontend.html" "frontend" [[:#other-counters]]) #{:id})
+   
+   :other-counter (dtfn (tnodes "frontend.html" "other-counter") #{:id})
+   })

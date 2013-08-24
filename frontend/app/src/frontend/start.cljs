@@ -5,11 +5,14 @@
             [io.pedestal.app.render :as render]
             [io.pedestal.app.messages :as msg]
             [frontend.behavior :as behavior]
-            [frontend.rendering :as rendering]))
+            [frontend.rendering :as rendering]
+            
+            [frontend.post-processing :as post]
+            ))
 
 
 (defn create-app [render-config]
-  (let [app (app/build behavior/example-app)
+  (let [app (app/build (post/add-post-processors behavior/example-app))
         render-fn (push-render/renderer "content" render-config render/log-fn)
         app-model (render/consume-app-model app render-fn)]
     (app/begin app)
@@ -19,9 +22,7 @@
 
     ; start with default user
     (p/put-message (:input app) {msg/type :set-value msg/topic [:user] :value :default})
-
     (p/put-message (:input app) {msg/type :set-value msg/topic [:greeting] :value "Hello World!"})
-
         
     {:app app :app-model app-model}))
 

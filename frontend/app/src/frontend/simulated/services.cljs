@@ -24,3 +24,7 @@
   (start [this]
     (receive-messages (:input app)))
   (stop [this]))
+
+
+(defn services-fn [message input-queue]
+  (.log js/console (str "Sending message to server: " message)))
