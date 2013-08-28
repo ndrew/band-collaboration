@@ -8,7 +8,8 @@
             [io.pedestal.app.protocols :as p]
             [frontend.simulated.services :as services]
             [io.pedestal.app :as app]                        
-                        
+                                    
+            [io.pedestal.app.messages :as msg]
             
             [frontend.rendering :as rendering]
             [goog.Uri :as guri]            
@@ -24,7 +25,10 @@
         
         app (start/create-app render-config)
         services (services/->MockServices (:app app))]
+
+    
     (app/consume-effects (:app app) services/services-fn)
+
     (p/start services)
     
     app))

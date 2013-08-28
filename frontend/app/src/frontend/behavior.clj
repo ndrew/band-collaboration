@@ -39,6 +39,16 @@
   [
    [:transform-enable [:main :my-counter] :inc [{msg/topic [:my-counter]}]]])
 
+
+(defn init-login [_]
+  [{:login
+    {:name
+     {:transforms
+      {:login [{msg/type :swap msg/topic [:login :name] (msg/param :value) {}}
+               {msg/topic msg/app-model msg/type :set-focus :name :dashboard} 
+               ]}}}}])
+
+
 (def example-app
   {:version 2
    
@@ -46,12 +56,19 @@
                ; check these later
                [:set-value [:user] set-user-transform]
                [:set-value [:greeting] set-value-transform]
+                
+               [:set-value [:login :*] set-value-transform]
+
                
+                              
                [:inc [:my-counter] inc-transform]
                [:swap [:**]         swap-transform]
                ]  
    
-   :emit [{:init init-main}
+   :emit [{:init init-login}
+          [#{[:login :*]} (app/default-emitter [])]
+          
+          {:init init-main}
            [#{[:my-counter]
               [:other-counters :*]
               [:total-count]
@@ -69,5 +86,11 @@
           [#{[:counters :*]} [:max-count] maximum :vals]
           [{[:counters :*] :nums [:total-count] :total} [:average-count] average-count :map]}
     
+   
+   :focus {:login [[:login]]
+        :dashboard  [[:main] 
+                     [:pedestal]]
+        :default :login}
+   
    })
 

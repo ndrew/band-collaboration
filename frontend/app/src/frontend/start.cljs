@@ -18,12 +18,15 @@
         app-model (render/consume-app-model app render-fn)]
     (app/begin app)
 
-    
+
     (p/put-message (:input app) {msg/type :inc msg/topic [:my-counter]})
 
     ; start with default user
-    (p/put-message (:input app) {msg/type :set-value msg/topic [:user] :value :default})
+    (p/put-message (:input app) {msg/type :set-value msg/topic [:login :name] :value :default})
+    
     (p/put-message (:input app) {msg/type :set-value msg/topic [:greeting] :value "Hello World!"})
+     
+    
         
     {:app app :app-model app-model}))
 

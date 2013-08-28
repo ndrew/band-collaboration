@@ -3,7 +3,11 @@
 
 (defmacro frontend-templates
   []
-  {:frontend-page (dtfn (tnodes "frontend.html" "frontend" [[:#other-counters]]) #{:id})
+  {
+   :login-page (tfn (tnodes "login.html" "login"))
    
+   ;; app tutorial stuff
+   :frontend-page (dtfn (tnodes "frontend.html" "frontend" [[:#other-counters]]) #{:id})
    :other-counter (dtfn (tnodes "frontend.html" "other-counter") #{:id})
+   
    })
