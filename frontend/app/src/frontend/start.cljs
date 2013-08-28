@@ -8,6 +8,7 @@
             [frontend.rendering :as rendering]
             
             [frontend.post-processing :as post]
+            [frontend.services :as services]
             ))
 
 
@@ -29,3 +30,9 @@
 
 (defn ^:export main []
   (create-app (rendering/render-config)))
+  
+  (comment (let [app (create-app (rendering/render-config))
+        services (services/->Services (:app app))]
+    (app/consume-effects (:app app) services/services-fn)
+    (p/start services)
+    app))

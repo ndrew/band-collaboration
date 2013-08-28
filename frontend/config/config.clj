@@ -33,7 +33,12 @@
                   ;; :tools-public. Override this value in an aspect
                   ;; with :tools-output. :public maps to out/public
                   ;; and and :tools-public maps to tools/out/public.
-                  :output-root :public}
+                  :output-root :public
+                  
+                  :api-server {:host "localhost" 
+                  :port 8080 
+                  :log-fn nil}
+                  }
     ;; Add arbitrary links to the control panel
     :control-panel {:design {:uri "/design.html"
                              :name "Design"
@@ -80,13 +85,18 @@
                         ;; build output goes to tools/out/public
                         :output-root :tools-public
                         ;; The data-ui aspect uses the tooling.html template
-                        :template "tooling.html"}
+                        :template "tooling.html"
+                        
+                        :params "renderer=auto"
+                        }
               :development {:uri "/frontend-dev.html"
                             :name "Development"
                             :out-file "frontend-dev.js"
                             :main 'frontend.start
                             :logging? true
-                            :order 3}
+                            :order 3
+                            :use-api-server? true
+                            }
               :fresh {:uri "/fresh.html"
                       :name "Fresh"
                       :out-file "fresh.js"
@@ -99,4 +109,17 @@
                            :optimizations :advanced
                            :out-file "frontend.js"
                            :main 'frontend.start
-                           :order 5}}}})
+                           :order 5
+                           :use-api-server? true
+                           
+                           }
+              :ui {:uri "/frontend-data-ui.html"
+                   :name "UI"
+                   :order 6
+                   :out-file "frontend-dev-ui.js"
+                   :main 'frontend.simulated.start
+                   :recording? true
+                   :logging? true
+                   :output-root :tools-public
+                   }
+              }}})
